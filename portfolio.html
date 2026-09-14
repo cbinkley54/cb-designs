@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" href="data:," />
+    <title>CB Designs — CAD, Graphic Design & AI Implementation</title>
+    <meta name="description" content="Remote-first CAD design, graphic design, and practical AI implementation for teams that need a dependable long-term creative and technical partner." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --paper: #f5f4ef;
+        --ink: #10212b;
+        --ink-soft: #526069;
+        --line: #ccd1cf;
+        --line-dark: #8d989a;
+        --signal: #d84a2f;
+        --signal-dark: #b53520;
+        --blueprint: #163d52;
+        --white: #ffffff;
+        --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+        --sans: "Manrope", system-ui, sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background:
+          linear-gradient(rgba(16, 33, 43, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(16, 33, 43, 0.035) 1px, transparent 1px),
+          var(--paper);
+        background-size: 32px 32px;
+        font-family: var(--sans);
+        font-size: 16px;
+        line-height: 1.65;
+        overflow-x: hidden;
+      }
+
+      a { color: inherit; }
+      button, a { -webkit-tap-highlight-color: transparent; }
+      button { font: inherit; }
+      .wrap { width: min(1160px, calc(100% - 48px)); margin-inline: auto; }
+      .section { padding: 108px 0; }
+      .section + .section { border-top: 1px solid var(--line); }
+
+      .skip-link {
+        position: fixed;
+        left: 16px;
+        top: -80px;
+        z-index: 100;
+        padding: 10px 14px;
+        color: var(--white);
+        background: var(--ink);
+      }
+      .skip-link:focus { top: 16px; }
+
+      .topbar {
+        position: relative;
+        border-bottom: 1px solid var(--line);
+        background: rgba(245, 244, 239, 0.94);
+      }
+      .topbar-inner {
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 24px;
+      }
+      .brand {
+        font-family: var(--mono);
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        text-decoration: none;
+      }
+      .brand span { color: var(--signal); }
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+      }
+      .nav a {
+        color: var(--ink-soft);
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .nav a:hover, .nav a:focus-visible { color: var(--ink); }
+      .nav .nav-cta {
+        padding: 9px 14px;
+        color: var(--white);
+        background: var(--ink);
+      }
+
+      .hero { padding: 74px 0 92px; }
+      .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+        align-items: stretch;
+        gap: 64px;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 24px;
+        font-family: var(--mono);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .eyebrow::before {
+        content: "";
+        width: 28px;
+        height: 2px;
+        background: var(--signal);
+      }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 {
+        max-width: 820px;
+        margin-bottom: 28px;
+        font-size: clamp(42px, 6.2vw, 78px);
+        line-height: 1.02;
+        letter-spacing: -0.055em;
+      }
+      .hero-lede {
+        max-width: 720px;
+        margin-bottom: 36px;
+        color: var(--ink-soft);
+        font-size: clamp(18px, 2vw, 22px);
+        line-height: 1.55;
+      }
+      .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+      .btn {
+        display: inline-flex;
+        min-height: 48px;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 12px 18px;
+        border: 1px solid var(--ink);
+        font-family: var(--mono);
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .btn-primary { color: var(--white); background: var(--signal); border-color: var(--signal); }
+      .btn-primary:hover, .btn-primary:focus-visible { background: var(--signal-dark); }
+      .btn-secondary { background: transparent; }
+      .btn-secondary:hover, .btn-secondary:focus-visible { background: var(--white); }
+      .arrow { font-size: 18px; line-height: 1; }
+
+      .drafting-board {
+        position: relative;
+        min-height: 500px;
+        overflow: hidden;
+        color: #d7e6e9;
+        background: var(--blueprint);
+        border: 1px solid #0d2c3d;
+      }
+      .drafting-board::after {
+        content: "REMOTE / CONTRACT";
+        position: absolute;
+        right: 18px;
+        bottom: 17px;
+        color: #9fb5bc;
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.12em;
+      }
+      .drafting-board svg { width: 100%; height: 100%; display: block; }
+      .availability {
+        position: absolute;
+        left: 22px;
+        top: 22px;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 9px 11px;
+        color: var(--ink);
+        background: var(--white);
+        font-family: var(--mono);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #2b9a68;
+        box-shadow: 0 0 0 3px rgba(43, 154, 104, 0.16);
+      }
+
+      .proof-strip {
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        background: rgba(255,255,255,0.45);
+      }
+      .proof-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .proof-item {
+        min-height: 126px;
+        padding: 26px 30px;
+        border-left: 1px solid var(--line);
+      }
+      .proof-item:last-child { border-right: 1px solid var(--line); }
+      .proof-item b {
+        display: block;
+        margin-bottom: 8px;
+        font-family: var(--mono);
+        font-size: 13px;
+      }
+      .proof-item span { color: var(--ink-soft); font-size: 14px; line-height: 1.5; }
+
+      .section-head {
+        display: grid;
+        grid-template-columns: minmax(0, 0.7fr) minmax(300px, 0.7fr);
+        justify-content: space-between;
+        gap: 48px;
+        margin-bottom: 54px;
+      }
+      .section-no {
+        display: block;
+        margin-bottom: 12px;
+        color: var(--signal);
+        font-family: var(--mono);
+        font-size: 12px;
+        font-weight: 600;
+      }
+      h2 {
+        margin-bottom: 0;
+        font-size: clamp(31px, 4vw, 50px);
+        line-height: 1.12;
+        letter-spacing: -0.04em;
+      }
+      .section-intro {
+        align-self: end;
+        margin-bottom: 5px;
+        color: var(--ink-soft);
+        font-size: 17px;
+      }
+
+      .work-list { border-top: 1px solid var(--ink); }
+      .work-item {
+        display: grid;
+        grid-template-columns: 64px minmax(220px, 0.58fr) minmax(280px, 1fr);
+        gap: 28px;
+        padding: 38px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .work-index {
+        padding-top: 4px;
+        color: var(--signal);
+        font-family: var(--mono);
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .work-title h3 {
+        margin-bottom: 10px;
+        font-size: 24px;
+        line-height: 1.25;
+        letter-spacing: -0.025em;
+      }
+      .tag-row { display: flex; flex-wrap: wrap; gap: 7px; }
+      .tag {
+        padding: 5px 8px;
+        border: 1px solid var(--line-dark);
+        font-family: var(--mono);
+        font-size: 10px;
+        line-height: 1.2;
+        text-transform: uppercase;
+      }
+      .work-copy p { margin-bottom: 18px; color: var(--ink-soft); }
+      .work-copy ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+      .work-copy li {
+        position: relative;
+        padding-left: 18px;
+        font-size: 14px;
+      }
+      .work-copy li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.75em;
+        width: 8px;
+        height: 1px;
+        background: var(--signal);
+      }
+
+      .services { color: var(--white); background: var(--ink); }
+      .services .section { border: 0; }
+      .services .section-intro { color: #b8c0c4; }
+      .services .section-no { color: #ff765f; }
+      .service-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-top: 1px solid #42515a;
+        border-left: 1px solid #42515a;
+      }
+      .service {
+        min-height: 360px;
+        padding: 32px;
+        border-right: 1px solid #42515a;
+        border-bottom: 1px solid #42515a;
+      }
+      .service-no {
+        color: #8fa0a9;
+        font-family: var(--mono);
+        font-size: 11px;
+      }
+      .service h3 { margin: 44px 0 18px; font-size: 25px; letter-spacing: -0.025em; }
+      .service p { color: #b8c0c4; font-size: 15px; }
+      .service .engagement {
+        display: block;
+        margin-top: 26px;
+        color: #ff8a75;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .commercial { background: rgba(255,255,255,0.5); }
+      .model-grid,
+      .price-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-top: 1px solid var(--ink);
+        border-left: 1px solid var(--ink);
+      }
+      .model-card,
+      .price-card {
+        padding: 30px;
+        border-right: 1px solid var(--ink);
+        border-bottom: 1px solid var(--ink);
+      }
+      .model-card { min-height: 260px; }
+      .model-card .model-no,
+      .price-card .price-label {
+        color: var(--signal);
+        font-family: var(--mono);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .model-card h3 { margin: 36px 0 12px; font-size: 23px; letter-spacing: -0.025em; }
+      .model-card p { margin-bottom: 0; color: var(--ink-soft); font-size: 14px; }
+      .pricing-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 32px;
+        margin: 70px 0 24px;
+      }
+      .pricing-head h3 { margin: 0; font-size: 28px; letter-spacing: -0.035em; }
+      .pricing-head p { max-width: 560px; margin: 0; color: var(--ink-soft); font-size: 14px; }
+      .price-card { min-height: 340px; }
+      .price-card h3 { margin: 20px 0 2px; font-size: 22px; }
+      .price-range {
+        margin-bottom: 24px;
+        color: var(--ink);
+        font-family: var(--mono);
+        font-size: 21px;
+        font-weight: 600;
+      }
+      .price-card ul { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+      .price-card li { color: var(--ink-soft); font-size: 14px; }
+      .price-card li b { display: block; color: var(--ink); font-family: var(--mono); font-size: 12px; }
+      .retainer-panel {
+        display: grid;
+        grid-template-columns: 1.25fr repeat(3, 0.75fr);
+        margin-top: 34px;
+        border: 1px solid var(--ink);
+        background: var(--blueprint);
+        color: var(--white);
+      }
+      .retainer-intro,
+      .retainer-tier { padding: 28px; }
+      .retainer-intro { border-right: 1px solid #527083; }
+      .retainer-intro h3 { margin-bottom: 10px; font-size: 22px; }
+      .retainer-intro p { margin: 0; color: #bed0d6; font-size: 13px; }
+      .retainer-tier { border-right: 1px solid #527083; }
+      .retainer-tier:last-child { border-right: 0; }
+      .retainer-tier b { display: block; font-size: 19px; }
+      .retainer-tier span { display: block; color: #bed0d6; font-family: var(--mono); font-size: 11px; }
+      .retainer-tier strong { display: block; margin-top: 16px; color: #ff9b89; font-family: var(--mono); font-size: 17px; }
+      .terms-title { margin: 70px 0 22px; font-size: 28px; letter-spacing: -0.035em; }
+      .terms-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-top: 1px solid var(--line-dark);
+      }
+      .term { padding: 22px 26px 22px 0; border-bottom: 1px solid var(--line); }
+      .term:nth-child(3n+2), .term:nth-child(3n+3) { padding-left: 26px; border-left: 1px solid var(--line); }
+      .term b { display: block; margin-bottom: 6px; font-size: 14px; }
+      .term p { margin: 0; color: var(--ink-soft); font-size: 13px; }
+      .commercial-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+        margin-top: 34px;
+      }
+      .rate-note { max-width: 760px; margin: 0; color: var(--ink-soft); font-size: 12px; }
+      .rate-note a { text-underline-offset: 3px; }
+
+      .about-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 0.95fr) minmax(320px, 1.05fr);
+        gap: 84px;
+      }
+      .about-copy .lead {
+        margin-bottom: 28px;
+        font-size: 23px;
+        line-height: 1.5;
+        letter-spacing: -0.02em;
+      }
+      .about-copy p { color: var(--ink-soft); }
+      .principles { border-top: 1px solid var(--ink); }
+      .principle {
+        display: grid;
+        grid-template-columns: 44px 1fr;
+        gap: 18px;
+        padding: 22px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .principle b { font-family: var(--mono); color: var(--signal); font-size: 12px; }
+      .principle h3 { margin-bottom: 4px; font-size: 17px; }
+      .principle p { margin: 0; color: var(--ink-soft); font-size: 14px; }
+
+      .skill-layout {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 36px;
+      }
+      .skill-group { padding-top: 18px; border-top: 3px solid var(--ink); }
+      .skill-group h3 { margin-bottom: 20px; font-size: 18px; }
+      .skill-group ul { margin: 0; padding: 0; list-style: none; }
+      .skill-group li {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+        color: var(--ink-soft);
+        font-size: 14px;
+      }
+      .skill-group li::after { content: "↗"; color: var(--signal); }
+
+      .fit-panel {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border: 1px solid var(--ink);
+        background: var(--white);
+      }
+      .fit-copy { padding: 48px; }
+      .fit-copy h2 { margin-bottom: 22px; }
+      .fit-copy > p { color: var(--ink-soft); }
+      .fit-list { display: grid; gap: 12px; margin-top: 28px; }
+      .fit-item { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; }
+      .check {
+        flex: 0 0 auto;
+        display: grid;
+        width: 20px;
+        height: 20px;
+        place-items: center;
+        margin-top: 2px;
+        color: var(--white);
+        background: var(--signal);
+        font-family: var(--mono);
+        font-size: 11px;
+      }
+      .fit-contact {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 48px;
+        color: var(--white);
+        background: var(--signal);
+      }
+      .fit-contact .small {
+        margin-bottom: 16px;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .fit-contact h3 { margin-bottom: 28px; font-size: clamp(27px, 3vw, 39px); line-height: 1.2; }
+      .email-link {
+        display: inline-block;
+        align-self: flex-start;
+        padding-bottom: 5px;
+        border-bottom: 2px solid rgba(255,255,255,0.7);
+        font-family: var(--mono);
+        font-size: clamp(14px, 1.7vw, 18px);
+        font-weight: 600;
+        text-decoration: none;
+        overflow-wrap: anywhere;
+      }
+      .copy-btn {
+        align-self: flex-start;
+        margin-top: 22px;
+        padding: 9px 12px;
+        border: 1px solid rgba(255,255,255,0.7);
+        color: var(--white);
+        background: transparent;
+        font-family: var(--mono);
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .copy-btn:hover, .copy-btn:focus-visible { color: var(--signal); background: var(--white); }
+
+      footer { padding: 30px 0 44px; border-top: 1px solid var(--line); }
+      .footer-inner {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        color: var(--ink-soft);
+        font-family: var(--mono);
+        font-size: 11px;
+      }
+      :focus-visible { outline: 3px solid #e5a000; outline-offset: 3px; }
+
+      @media (max-width: 900px) {
+        .hero-grid, .about-grid { grid-template-columns: 1fr; }
+        .hero-grid { gap: 44px; }
+        .drafting-board { min-height: 420px; }
+        .proof-grid { grid-template-columns: repeat(2, 1fr); }
+        .proof-item:nth-child(2) { border-right: 1px solid var(--line); }
+        .proof-item:nth-child(n+3) { border-top: 1px solid var(--line); }
+        .section-head { grid-template-columns: 1fr; gap: 22px; }
+        .work-item { grid-template-columns: 42px minmax(180px, 0.5fr) 1fr; }
+        .service-grid, .model-grid, .price-grid { grid-template-columns: 1fr; }
+        .service, .model-card, .price-card { min-height: auto; }
+        .service h3 { margin-top: 24px; }
+        .pricing-head { align-items: flex-start; flex-direction: column; gap: 12px; }
+        .retainer-panel { grid-template-columns: repeat(3, 1fr); }
+        .retainer-intro { grid-column: 1 / -1; border-right: 0; border-bottom: 1px solid #527083; }
+        .terms-grid { grid-template-columns: 1fr 1fr; }
+        .term:nth-child(n) { padding: 22px 24px; border-left: 0; }
+        .term:nth-child(even) { border-left: 1px solid var(--line); }
+        .skill-layout { grid-template-columns: 1fr; }
+        .fit-panel { grid-template-columns: 1fr; }
+      }
+
+      @media (max-width: 680px) {
+        .wrap { width: min(100% - 30px, 1160px); }
+        .section { padding: 74px 0; }
+        .topbar-inner { min-height: 62px; }
+        .brand { font-size: 14px; }
+        .nav a:not(.nav-cta) { display: none; }
+        .nav .nav-cta { padding: 8px 11px; font-size: 12px; }
+        .hero { padding: 52px 0 66px; }
+        h1 { font-size: clamp(39px, 12vw, 56px); }
+        .hero-lede { font-size: 18px; }
+        .hero-actions { display: grid; }
+        .btn { width: 100%; }
+        .drafting-board { min-height: 330px; }
+        .proof-grid { grid-template-columns: 1fr; }
+        .proof-item, .proof-item:nth-child(2), .proof-item:last-child {
+          min-height: auto;
+          padding: 20px 22px;
+          border-right: 1px solid var(--line);
+          border-top: 1px solid var(--line);
+        }
+        .proof-item:first-child { border-top: 0; }
+        .work-item { grid-template-columns: 34px 1fr; gap: 14px; }
+        .work-copy { grid-column: 2; }
+        .service, .model-card, .price-card { padding: 27px 24px; }
+        .pricing-head { margin-top: 54px; }
+        .retainer-panel { grid-template-columns: 1fr; }
+        .retainer-intro, .retainer-tier { padding: 24px; border-right: 0; border-bottom: 1px solid #527083; }
+        .retainer-tier:last-child { border-bottom: 0; }
+        .terms-grid { grid-template-columns: 1fr; }
+        .term:nth-child(n) { padding: 20px 0; border-left: 0; }
+        .commercial-footer { align-items: stretch; flex-direction: column; }
+        .about-grid { gap: 50px; }
+        .about-copy .lead { font-size: 20px; }
+        .fit-copy, .fit-contact { padding: 32px 24px; }
+        .footer-inner { flex-direction: column; gap: 8px; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+      }
+
+      @media print {
+        body { background: white; }
+        .topbar, .hero-actions, .copy-btn { display: none; }
+        .section { padding: 52px 0; }
+        .services { color: var(--ink); background: white; }
+        .services .section-intro, .service p { color: var(--ink-soft); }
+        .service-grid, .service { border-color: var(--line); }
+        .fit-contact { color: var(--ink); background: white; border-top: 1px solid var(--ink); }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to portfolio</a>
+
+    <header class="topbar">
+      <div class="wrap topbar-inner">
+        <nav class="nav" aria-label="Portfolio navigation">
+          <a href="#work">Work</a>
+          <a href="#services">Services</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#capabilities">Capabilities</a>
+          <a class="nav-cta" href="mailto:cbinkley54@gmail.com?subject=Remote%20contract%20opportunity">Let’s talk</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero">
+        <div class="wrap hero-grid">
+          <div>
+            <div class="eyebrow">CB Designs · Remote-first creative & technical partner</div>
+            <h1>I turn ideas into parts, visuals, and practical systems.</h1>
+            <p class="hero-lede">I bring hands-on CAD experience, self-taught design discipline, real 3D-printing feedback, and small-business marketing instincts to remote teams that need dependable, ongoing support.</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="mailto:cbinkley54@gmail.com?subject=Remote%20contract%20opportunity%20for%20CB%20Designs">Discuss a remote contract <span class="arrow" aria-hidden="true">→</span></a>
+              <a class="btn btn-secondary" href="#work">See selected experience</a>
+            </div>
+          </div>
+
+          <div class="drafting-board" aria-label="Technical drawing of a custom manufactured part">
+            <div class="availability"><span class="status-dot" aria-hidden="true"></span> Available for remote contract work</div>
+            <svg viewBox="0 0 520 580" role="img" aria-labelledby="draft-title draft-desc" xmlns="http://www.w3.org/2000/svg">
+              <title id="draft-title">Dimensioned CAD-style part drawing</title>
+              <desc id="draft-desc">A precise blueprint illustration showing multiple views of a custom bracket and its measurements.</desc>
+              <defs>
+                <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#8ab1bd" stroke-width="0.45" opacity="0.28"/>
+                </pattern>
+              </defs>
+              <rect width="520" height="580" fill="url(#grid)"/>
+              <g fill="none" stroke="#d7e6e9" stroke-width="2">
+                <path d="M117 174h194v46h-61v108h-72V220h-61z"/>
+                <circle cx="150" cy="197" r="12"/><circle cx="278" cy="197" r="12"/>
+                <path d="M385 174h56v154h-56z"/><circle cx="413" cy="205" r="12"/>
+                <path d="M117 401h194v72H117z"/><circle cx="150" cy="437" r="12"/><circle cx="278" cy="437" r="12"/>
+              </g>
+              <g fill="none" stroke="#ff8a75" stroke-width="1">
+                <path d="M117 145v-21m194 21v-21M117 132h194"/>
+                <path d="M117 128l8-4v8zm194 0l-8-4v8z" fill="#ff8a75"/>
+                <path d="M89 174H68m21 154H68M77 174v154"/>
+                <path d="M73 174l4 8 4-8zm0 154l4-8 4 8z" fill="#ff8a75"/>
+                <path d="M385 350v18m56-18v18m-56-8h56"/>
+              </g>
+              <g fill="#d7e6e9" font-family="IBM Plex Mono, monospace" font-size="11">
+                <text x="117" y="106">FRONT ELEVATION</text>
+                <text x="385" y="154">SIDE</text>
+                <text x="117" y="383">PLAN</text>
+                <text x="200" y="121">194 mm</text>
+                <text x="35" y="255" transform="rotate(-90 35 255)">154 mm</text>
+                <text x="393" y="387">56 mm</text>
+                <text x="117" y="520">CB-D / REV. 03</text>
+                <text x="117" y="540" opacity=".68">FUNCTION → FIT → REFINE</text>
+              </g>
+              <g stroke="#9bc1cc" stroke-width="0.8" stroke-dasharray="5 5" opacity=".7">
+                <path d="M214 145v207"/><path d="M89 251h250"/><path d="M413 145v207"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="proof-strip" aria-label="Working strengths">
+        <div class="wrap proof-grid">
+          <div class="proof-item"><b>CAD FOUNDATION</b><span>Formal high-school CAD training strengthened through continued self-teaching.</span></div>
+          <div class="proof-item"><b>BUILT TO TEST</b><span>Frequent 3D printing keeps my design decisions grounded in fit and function.</span></div>
+          <div class="proof-item"><b>BUSINESS MINDED</b><span>I create the marketing graphics for a small business I operate.</span></div>
+          <div class="proof-item"><b>REMOTE READY</b><span>Clear files, practical documentation, and communication built for distributed teams.</span></div>
+        </div>
+      </section>
+
+      <section class="section" id="work">
+        <div class="wrap">
+          <div class="section-head">
+            <div><span class="section-no">01 / SELECTED EXPERIENCE</span><h2>Experience grounded in real use.</h2></div>
+            <p class="section-intro">My current experience is hands-on and self-directed: making custom printed designs, producing real marketing for my business, and building a disciplined approach to new AI work.</p>
+          </div>
+
+          <div class="work-list">
+            <article class="work-item">
+              <div class="work-index">01A</div>
+              <div class="work-title">
+                <h3>Custom functional 3D-print designs</h3>
+                <div class="tag-row"><span class="tag">CAD</span><span class="tag">Prototyping</span><span class="tag">Iteration</span></div>
+              </div>
+              <div class="work-copy">
+                <p>I design custom parts around real-world dimensions, then print and test them. That physical feedback makes me attentive to clearances, wall thickness, print orientation, fasteners, durability, and ease of assembly—not just what looks right on screen.</p>
+                <ul>
+                  <li>Replacement components, mounts, brackets, organizers, and fit-specific accessories</li>
+                  <li>Dimension-driven modeling with revision-ready source files</li>
+                  <li>Prototype evaluation and design refinement after real-world testing</li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="work-item">
+              <div class="work-index">01B</div>
+              <div class="work-title">
+                <h3>Small-business campaign graphics</h3>
+                <div class="tag-row"><span class="tag">Brand graphics</span><span class="tag">Social</span><span class="tag">Production</span></div>
+              </div>
+              <div class="work-copy">
+                <p>Running a small business taught me to design for a real commercial goal. I build promotional graphics that make the service clear, keep the visual identity consistent, and give customers an obvious next step across social posts and digital materials.</p>
+                <ul>
+                  <li>Seasonal promotional concepts and repeatable campaign systems</li>
+                  <li>Platform-ready layouts with readable hierarchy and strong calls to action</li>
+                  <li>Consistent visual treatment across a continuing content schedule</li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="work-item">
+              <div class="work-index">01C</div>
+              <div class="work-title">
+                <h3>AI implementation approach</h3>
+                <div class="tag-row"><span class="tag">Process design</span><span class="tag">Workflow</span><span class="tag">QA</span></div>
+              </div>
+              <div class="work-copy">
+                <p>I’m building this service around a practical principle: use AI to remove repetitive work without removing human judgment. For a new engagement, I would first map the current process, identify a safe high-value task, and build a small workflow the team can test before expanding it.</p>
+                <ul>
+                  <li>Start with one defined use case and a measurable review point</li>
+                  <li>Document prompts, inputs, outputs, and owner responsibilities</li>
+                  <li>Keep human review in place for accuracy, tone, and brand consistency</li>
+                </ul>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <div class="services" id="services">
+        <section class="section">
+          <div class="wrap">
+            <div class="section-head">
+              <div><span class="section-no">02 / ONGOING SERVICES</span><h2>A long-term extension of your team.</h2></div>
+              <p class="section-intro">I’m most interested in remote contracts and retained partnerships where context compounds, systems improve, and I can take steady ownership of meaningful work.</p>
+            </div>
+            <div class="service-grid">
+              <article class="service">
+                <span class="service-no">S–01</span>
+                <h3>CAD design support</h3>
+                <p>Ongoing modeling, drawing updates, print-ready part development, revision management, and production-minded problem solving for a busy design or engineering team.</p>
+                <span class="engagement">Weekly capacity · Embedded contract support</span>
+              </article>
+              <article class="service">
+                <span class="service-no">S–02</span>
+                <h3>Graphic design partner</h3>
+                <p>Reliable campaign graphics, social creative, sales materials, branded templates, and production support that keeps the visual side of a business moving.</p>
+                <span class="engagement">Monthly retainer · Ongoing creative production</span>
+              </article>
+              <article class="service">
+                <span class="service-no">S–03</span>
+                <h3>AI workflow implementation</h3>
+                <p>Practical help identifying repeatable tasks, documenting AI-assisted workflows, building prompt systems, and improving them with the people who use them.</p>
+                <span class="engagement">Implementation sprint → Continuing optimization</span>
+              </article>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="section commercial" id="pricing">
+        <div class="wrap">
+          <div class="section-head">
+            <div><span class="section-no">03 / ENGAGEMENT MODEL</span><h2>Clear scope. Predictable cost. No mystery handoffs.</h2></div>
+            <p class="section-intro">Every engagement starts with a written scope of work and ends with usable files, documentation, and a clean handoff. Choose a focused project, reserved monthly capacity, or embedded hourly support.</p>
+          </div>
+
+          <div class="model-grid" aria-label="Contract engagement options">
+            <article class="model-card">
+              <span class="model-no">MODEL A</span>
+              <h3>Fixed-scope project</h3>
+              <p>Best for one defined deliverable. The quote lists inputs, output files, milestones, timeline, and two review rounds. Standard payment is 50% to schedule the work and 50% on final approval.</p>
+            </article>
+            <article class="model-card">
+              <span class="model-no">MODEL B</span>
+              <h3>Monthly retainer</h3>
+              <p>Best for recurring CAD updates, campaign production, or workflow optimization. A prepaid hour bank reserves capacity each month, with priorities set together and overages approved before work continues.</p>
+            </article>
+            <article class="model-card">
+              <span class="model-no">MODEL C</span>
+              <h3>Embedded hourly support</h3>
+              <p>Best when priorities change week to week. Time is tracked against agreed tasks, status is shared regularly, and invoices are issued every two weeks with Net 15 payment terms.</p>
+            </article>
+          </div>
+
+          <div class="pricing-head">
+            <h3>Starting price guide</h3>
+            <p>USD planning ranges for typical small-business and remote-team work. Final pricing depends on complexity, file condition, turnaround, and the level of documentation or testing required.</p>
+          </div>
+
+          <div class="price-grid" aria-label="Service pricing guide">
+            <article class="price-card">
+              <span class="price-label">CAD design support</span>
+              <h3>Drafting & modeling</h3>
+              <div class="price-range">$35–$50 / hour</div>
+              <ul>
+                <li><b>2D drawing or cleanup</b>from $250</li>
+                <li><b>Single print-ready part</b>from $450</li>
+                <li><b>Prototype revision cycle</b>quoted after file review</li>
+              </ul>
+            </article>
+            <article class="price-card">
+              <span class="price-label">Graphic design</span>
+              <h3>Campaign production</h3>
+              <div class="price-range">$30–$45 / hour</div>
+              <ul>
+                <li><b>Branded one-page layout</b>from $250</li>
+                <li><b>Social campaign kit</b>from $300</li>
+                <li><b>Reusable template system</b>from $450</li>
+              </ul>
+            </article>
+            <article class="price-card">
+              <span class="price-label">AI implementation</span>
+              <h3>Workflow improvement</h3>
+              <div class="price-range">$45–$70 / hour</div>
+              <ul>
+                <li><b>Workflow audit & roadmap</b>from $500</li>
+                <li><b>Small pilot sprint</b>from $1,250</li>
+                <li><b>Documentation & training</b>included when scoped</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="retainer-panel" aria-label="Monthly retainer options">
+            <div class="retainer-intro">
+              <h3>Reserved monthly capacity</h3>
+              <p>For predictable, mixed-service support. Hours and priorities are reviewed monthly; extra time is only added with written approval.</p>
+            </div>
+            <div class="retainer-tier"><b>Starter</b><span>12 hours / month</span><strong>$525</strong></div>
+            <div class="retainer-tier"><b>Core</b><span>25 hours / month</span><strong>$1,050</strong></div>
+            <div class="retainer-tier"><b>Embedded</b><span>50 hours / month</span><strong>$1,950</strong></div>
+          </div>
+
+          <h3 class="terms-title">Working agreement essentials</h3>
+          <div class="terms-grid" aria-label="Standard contract terms">
+            <div class="term"><b>Scope & acceptance</b><p>The signed statement of work names deliverables, file formats, milestones, review dates, and what counts as approval.</p></div>
+            <div class="term"><b>Revisions</b><p>Fixed projects include two review rounds unless the proposal says otherwise. New directions are quoted as a change request.</p></div>
+            <div class="term"><b>Payment</b><p>Projects use milestone billing; retainers are prepaid monthly; hourly support is invoiced every two weeks on Net 15 terms.</p></div>
+            <div class="term"><b>Ownership</b><p>Final approved deliverables transfer after full payment. Working files and third-party licenses are listed in the proposal.</p></div>
+            <div class="term"><b>Confidentiality</b><p>Client files and nonpublic information stay confidential and are used only to complete the agreed work.</p></div>
+            <div class="term"><b>Pause or exit</b><p>Either side may end a retainer with 30 days’ notice; completed work and approved expenses remain payable.</p></div>
+          </div>
+
+          <div class="commercial-footer">
+            <p class="rate-note">Pricing is a starting guide, not a binding quote. CAD work covers drafting, modeling, and prototyping support—not licensed engineering or stamped drawings. Materials, printing, paid assets, software subscriptions, and API usage are separate when needed. Rate bands were checked against public <a href="https://www.upwork.com/hire/cad-designers/" target="_blank" rel="noopener noreferrer">CAD hiring</a>, <a href="https://www.indeed.com/career-advice/pay-salary/graphic-design-rates-freelance" target="_blank" rel="noopener noreferrer">freelance design</a>, and <a href="https://www.layer3labs.io/guides/ai-consulting-rates-pricing" target="_blank" rel="noopener noreferrer">AI consulting</a> benchmarks in September 2026.</p>
+            <a class="btn btn-primary" href="mailto:cbinkley54@gmail.com?subject=Project%20scope%20and%20pricing%20request">Request a scope & quote <span class="arrow" aria-hidden="true">→</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="about">
+        <div class="wrap about-grid">
+          <div class="about-copy">
+            <span class="section-no">04 / HOW I WORK</span>
+            <h2>Resourceful by practice, precise by habit.</h2>
+            <p class="lead">My path combines a solid CAD education with years of teaching myself by making, testing, running a business, and solving the next problem in front of me.</p>
+            <p>I’m comfortable learning new tools, working from a clear brief, and turning rough ideas into organized deliverables. I value straight communication and I don’t hide uncertainty: I ask the question, test the assumption, and keep the work moving.</p>
+            <p>For the right team, I’m looking for enough ongoing responsibility to replace a full-time income—not scattered one-off gigs. In return, I bring the ownership mindset of a small-business operator and the adaptability of a self-taught maker.</p>
+          </div>
+          <div class="principles" aria-label="Working principles">
+            <div class="principle"><b>01</b><div><h3>Start with the real constraint</h3><p>Dimensions, audience, process, budget, and deadline shape the solution.</p></div></div>
+            <div class="principle"><b>02</b><div><h3>Make progress visible</h3><p>Clear milestones, readable files, and direct updates make remote work dependable.</p></div></div>
+            <div class="principle"><b>03</b><div><h3>Test before calling it done</h3><p>Printed prototypes, layout checks, and workflow review expose weak assumptions early.</p></div></div>
+            <div class="principle"><b>04</b><div><h3>Improve the system too</h3><p>A good deliverable solves today’s need; a good process makes the next one easier.</p></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="capabilities">
+        <div class="wrap">
+          <div class="section-head">
+            <div><span class="section-no">05 / CAPABILITIES</span><h2>Technical craft with creative range.</h2></div>
+            <p class="section-intro">I adapt quickly to the specific software and standards a team already uses. My core value is the ability to think across design, production, and implementation.</p>
+          </div>
+          <div class="skill-layout">
+            <div class="skill-group">
+              <h3>CAD & fabrication</h3>
+              <ul><li>2D drafting</li><li>3D solid modeling</li><li>Dimension-driven design</li><li>3D-print preparation</li><li>Prototype iteration</li><li>Drawing organization</li></ul>
+            </div>
+            <div class="skill-group">
+              <h3>Graphic design</h3>
+              <ul><li>Marketing graphics</li><li>Social media creative</li><li>Campaign systems</li><li>Visual hierarchy</li><li>Brand consistency</li><li>Production-ready exports</li></ul>
+            </div>
+            <div class="skill-group">
+              <h3>AI implementation</h3>
+              <ul><li>Workflow mapping</li><li>Prompt system design</li><li>Content operations</li><li>Documentation</li><li>Human review process</li><li>Continuous improvement</li></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="contact">
+        <div class="wrap">
+          <div class="fit-panel">
+            <div class="fit-copy">
+              <span class="section-no">06 / GOOD FIT</span>
+              <h2>Let’s build something that lasts.</h2>
+              <p>I’m available for remote contract work with teams that want a steady, versatile contributor—not just an extra set of hands for a day.</p>
+              <div class="fit-list">
+                <div class="fit-item"><span class="check" aria-hidden="true">✓</span><span>Ongoing CAD production and design support</span></div>
+                <div class="fit-item"><span class="check" aria-hidden="true">✓</span><span>Monthly creative retainers for growing businesses</span></div>
+                <div class="fit-item"><span class="check" aria-hidden="true">✓</span><span>AI workflow implementation with continuing optimization</span></div>
+                <div class="fit-item"><span class="check" aria-hidden="true">✓</span><span>Remote roles with room to learn, contribute, and take ownership</span></div>
+              </div>
+            </div>
+            <div class="fit-contact">
+              <span class="small">Available for remote contract work</span>
+              <h3>Tell me what your team needs to keep moving.</h3>
+              <a class="email-link" href="mailto:cbinkley54@gmail.com?subject=Remote%20contract%20opportunity%20for%20CB%20Designs">cbinkley54@gmail.com</a>
+              <button class="copy-btn" type="button" data-copy-email>Copy email address</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap footer-inner">
+        <span>CB Designs · CAD / Graphics / AI</span>
+        <span>Remote-first · Contract & retainer engagements</span>
+      </div>
+    </footer>
+
+    <script>
+      const copyButton = document.querySelector('[data-copy-email]');
+      copyButton.addEventListener('click', async () => {
+        const email = 'cbinkley54@gmail.com';
+        try {
+          await navigator.clipboard.writeText(email);
+          copyButton.textContent = 'Email copied';
+        } catch (error) {
+          const helper = document.createElement('textarea');
+          helper.value = email;
+          helper.setAttribute('readonly', '');
+          helper.style.position = 'fixed';
+          helper.style.opacity = '0';
+          document.body.appendChild(helper);
+          helper.select();
+          document.execCommand('copy');
+          helper.remove();
+          copyButton.textContent = 'Email copied';
+        }
+        window.setTimeout(() => { copyButton.textContent = 'Copy email address'; }, 2200);
+      });
+    </script>
+  </body>
+</html>
